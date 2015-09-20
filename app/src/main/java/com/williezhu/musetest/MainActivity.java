@@ -190,7 +190,7 @@ public class MainActivity extends ActionBarActivity {
 
                 double alphaBetaRatio = frequencyStrengths[2] / frequencyStrengths[3];
 
-                if (dataFill < 60 && headbandOn) {
+                if (dataFill < 60 && headbandOn && !hasCalibrated) {
                     sleepData[dataFill] = alphaBetaRatio;
                     Log.d("data", "collecting: " + alphaBetaRatio);
                     dataFill++;
