@@ -1,8 +1,25 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-    </style>
+   <!-- Base application theme. -->
+   
+   <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+      <!-- Customize your theme here. -->
+   </style>
+   
+   <style name="CustomButtonStyle">
+      <item name="android:layout_width">100dp</item>
+      <item name="android:layout_height">38dp</item>
+      <item name="android:capitalize">characters</item>
+      <item name="android:typeface">monospace</item>
+      <item name="android:shadowDx">1.2</item>
+      <item name="android:shadowDy">1.2</item>
+      <item name="android:shadowRadius">2</item>
+      <item name="android:textColor">#ffffff</item>
+      <item name="android:gravity" >center</item>
+      <item name="android:layout_margin" >3dp</item>
+      <item name="android:textSize" >5pt</item>
+      <item name="android:background">#110A4F</item>
+      <item name="android:shadowColor" >#A8A8A8</item>
+   </style>
 
 </resources>
