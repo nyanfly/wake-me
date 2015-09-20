@@ -94,18 +94,6 @@ public class MainActivity extends ActionBarActivity {
                         TextView statusText =
                                 (TextView) findViewById(R.id.con_status);
                         statusText.setText(status);
-//                        TextView museVersionText =
-//                                (TextView) findViewById(R.id.version);
-//                        if (current == ConnectionState.CONNECTED) {
-//                            MuseVersion museVersion = muse.getMuseVersion();
-//                            String version = museVersion.getFirmwareType() +
-//                                    " - " + museVersion.getFirmwareVersion() +
-//                                    " - " + Integer.toString(
-//                                    museVersion.getProtocolVersion());
-//                            museVersionText.setText(version);
-//                        } else {
-//                            museVersionText.setText(R.string.undefined);
-//                        }
                     }
                 });
             }
@@ -135,71 +123,12 @@ public class MainActivity extends ActionBarActivity {
             final ArrayList<Double> data = p.getValues();
 
             switch (p.getPacketType()) {
-//                case EEG:
-//                    updateEeg(p.getValues());
-//                    break;
-//                case ACCELEROMETER:
-//                    updateAccelerometer(p.getValues());
-//                    break;
                 case BATTERY:
                     updateBattery(p.getValues());
                     break;
-//                case BETA_RELATIVE:
-//                    logToFile(String.format("alpha_rel %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    updateAlpha(p.getValues());
-//                    break;
-//                case BETA_RELATIVE:
-//                    logToFile(String.format("beta_rel %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case GAMMA_RELATIVE:
-//                    logToFile(String.format("gamma_rel %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case DELTA_RELATIVE:
-//                    logToFile(String.format("delta_rel %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case THETA_RELATIVE:
-//                    logToFile(String.format("theta_rel %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case ALPHA_ABSOLUTE:
-//                    logToFile(String.format("alpha_abs %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case BETA_ABSOLUTE:
-//                    logToFile(String.format("beta_abs %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case GAMMA_ABSOLUTE:
-//                    logToFile(String.format("gamma_abs %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case DELTA_ABSOLUTE:
-//                    logToFile(String.format("delta_abs %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case THETA_ABSOLUTE:
-//                    logToFile(String.format("theta_abs %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
                 case EEG:
-//                    logToFile(String.format("alpha_score %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
                     updateEeg(p.getValues());
                     break;
-//                case BETA_SCORE:
-//                    logToFile(String.format("beta_score %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case GAMMA_SCORE:
-//                    logToFile(String.format("gamma_score %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case DELTA_SCORE:
-//                    logToFile(String.format("delta_score %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case THETA_SCORE:
-//                    logToFile(String.format("theta_score %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case HORSESHOE:
-//                    logToFile(String.format("horseshoe %6.2f %6.2f %6.2f %6.2f", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal())));
-//                    break;
-//                case MELLOW:
-//                    logToFile(String.format("mellow %6.2f", data.get(0)));
-//                    break;
-//                case CONCENTRATION:
-//                    logToFile(String.format("concentration %6.2f", data.get(0)));
-//                    break;
                 default:
                     break;
             }
@@ -213,8 +142,6 @@ public class MainActivity extends ActionBarActivity {
             } else if (!p.getHeadbandOn() && headbandOn) {
                 Log.i("Artifacts", "headband off!");
                 headbandOn = false;
-//            } else if (p.getHeadbandOn() && p.getBlink()) {
-//                Log.i("Artifacts", "blink");
             }
         }
 
@@ -231,153 +158,69 @@ public class MainActivity extends ActionBarActivity {
                 });
             }
         }
-        
-        private void updateAccelerometer(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        TextView acc_x = (TextView) findViewById(R.id.acc_x);
-//                        TextView acc_y = (TextView) findViewById(R.id.acc_y);
-//                        TextView acc_z = (TextView) findViewById(R.id.acc_z);
-//                        acc_x.setText(String.format(
-//                                "%6.2f", data.get(Accelerometer.FORWARD_BACKWARD.ordinal())));
-//                        acc_y.setText(String.format(
-//                                "%6.2f", data.get(Accelerometer.UP_DOWN.ordinal())));
-//                        acc_z.setText(String.format(
-//                                "%6.2f", data.get(Accelerometer.LEFT_RIGHT.ordinal())));
-                    }
-                });
-            }
-        }
 
         private void updateEeg(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        TextView eeg_le = (TextView) findViewById(R.id.eeg_left_ear);
-//                        TextView eeg_lf = (TextView) findViewById(R.id.eeg_left_forehead);
-//                        TextView eeg_rf = (TextView) findViewById(R.id.eeg_right_forehead);
-//                        TextView eeg_re = (TextView) findViewById(R.id.eeg_right_ear);
-//                        eeg_le.setText(String.format(
-//                                "%6.2f", data.get(Eeg.TP9.ordinal())));
-//                        eeg_lf.setText(String.format(
-//                                "%6.2f", data.get(Eeg.FP1.ordinal())));
-//                        eeg_rf.setText(String.format(
-//                                "%6.2f", data.get(Eeg.FP2.ordinal())));
-//                        eeg_re.setText(String.format(
-//                                "%6.2f", data.get(Eeg.TP10.ordinal())));
-                    }
-                });
-
-                if (bufferFill <= 511) {
-                    leftEarEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.TP9.ordinal()));
-                    leftForeheadEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.FP1.ordinal()));
-                    rightForeheadEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.FP2.ordinal()));
-                    rightEarEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.TP10.ordinal()));
-                    bufferFill++;
-                }
-
-                if (bufferFill == 512) {
-                    Complex[] y1 = FFT.fft(leftEarEeg);
-                    Complex[] y2 = FFT.fft(leftForeheadEeg);
-                    Complex[] y3 = FFT.fft(rightForeheadEeg);
-                    Complex[] y4 = FFT.fft(rightEarEeg);
-                    double[] z1 = FFT.power(y1, 512);
-                    double[] z2 = FFT.power(y2, 512);
-                    double[] z3 = FFT.power(y3, 512);
-                    double[] z4 = FFT.power(y4, 512);
-                    double[] wave1 = FFT.wakeme(z1);
-                    double[] wave2 = FFT.wakeme(z2);
-                    double[] wave3 = FFT.wakeme(z3);
-                    double[] wave4 = FFT.wakeme(z4);
-
-                    double[] frequencyStrengths = new double[5];
-
-                    for (int i = 0; i < wave1.length; i++) {
-                        frequencyStrengths[i] = (wave1[i] / 0.25) + (wave2[i] / 0.25) + (wave3[i] / 0.25) + (wave4[i] / 0.25);
-                    }
-
-                    double alphaBetaRatio = frequencyStrengths[2] / frequencyStrengths[3];
-
-                    if (dataFill < 60 && headbandOn) {
-                        sleepData[dataFill] = alphaBetaRatio;
-                        Log.d("data", "collecting: " + alphaBetaRatio);
-                        dataFill++;
-                    } else if (dataFill == 60 & !hasCalibrated) {
-                        Statistics stats = new Statistics(sleepData);
-                        mean = stats.getMean();
-                        stdDev = stats.getStdDev();
-                        Log.d("data", "calibrated!");
-                        hasCalibrated = true;
-
-                        // use running averages from now on with 5 inputs
-                        for (int i = 0; i < 5; i++) {
-                            sleepData[i] = mean;
-                        }
-
-                        dataFill = 0;
-                    }
-
-                    if (hasCalibrated) {
-                        dataFill = (dataFill + 1) % 5;
-                        sleepData[dataFill] = alphaBetaRatio;
-
-                        Statistics stats = new Statistics(Arrays.copyOfRange(sleepData, 0, 5));
-
-                        if (stats.getMean() > (mean + 2.5 * stdDev)) {
-                            Log.d("SLEEP", "YOU SLEEPING BRO");
-                        }
-                    }
-
-                    bufferFill = 0;
-                }
+            if (bufferFill <= 511) {
+                leftEarEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.TP9.ordinal()));
+                leftForeheadEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.FP1.ordinal()));
+                rightForeheadEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.FP2.ordinal()));
+                rightEarEeg[bufferFill] = new Complex(bufferFill, data.get(Eeg.TP10.ordinal()));
+                bufferFill++;
             }
-        }
 
-        private void updateAlpha(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+            if (bufferFill == 512) {
+                Complex[] y1 = FFT.fft(leftEarEeg);
+                Complex[] y2 = FFT.fft(leftForeheadEeg);
+                Complex[] y3 = FFT.fft(rightForeheadEeg);
+                Complex[] y4 = FFT.fft(rightEarEeg);
+                double[] z1 = FFT.power(y1, 512);
+                double[] z2 = FFT.power(y2, 512);
+                double[] z3 = FFT.power(y3, 512);
+                double[] z4 = FFT.power(y4, 512);
+                double[] wave1 = FFT.wakeme(z1);
+                double[] wave2 = FFT.wakeme(z2);
+                double[] wave3 = FFT.wakeme(z3);
+                double[] wave4 = FFT.wakeme(z4);
 
-                    }
-                });
+                double[] frequencyStrengths = new double[5];
 
-
-
-                try {
-                    outputStream.write(String.format("%6.2f %6.2f %6.2f %6.2f %d\n", data.get(Eeg.TP9.ordinal()), data.get(Eeg.FP1.ordinal()), data.get(Eeg.FP2.ordinal()), data.get(Eeg.TP10.ordinal()), System.currentTimeMillis()).getBytes());
-                } catch (IOException e) {
-//                       pray this doesn't happen
+                for (int i = 0; i < wave1.length; i++) {
+                    frequencyStrengths[i] = (wave1[i] / 0.25) + (wave2[i] / 0.25) + (wave3[i] / 0.25) + (wave4[i] / 0.25);
                 }
-            }
-        }
 
-        private void updateAlphaRelative(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        TextView elem1 = (TextView) findViewById(R.id.elem1);
-//                        TextView elem2 = (TextView) findViewById(R.id.elem2);
-//                        TextView elem3 = (TextView) findViewById(R.id.elem3);
-//                        TextView elem4 = (TextView) findViewById(R.id.elem4);
-//                        elem1.setText(String.format(
-//                                "%6.2f", data.get(Eeg.TP9.ordinal())));
-//                        elem2.setText(String.format(
-//                                "%6.2f", data.get(Eeg.FP1.ordinal())));
-//                        elem3.setText(String.format(
-//                                "%6.2f", data.get(Eeg.FP2.ordinal())));
-//                        elem4.setText(String.format(
-//                                "%6.2f", data.get(Eeg.TP10.ordinal())));
+                double alphaBetaRatio = frequencyStrengths[2] / frequencyStrengths[3];
+
+                if (dataFill < 60 && headbandOn) {
+                    sleepData[dataFill] = alphaBetaRatio;
+                    Log.d("data", "collecting: " + alphaBetaRatio);
+                    dataFill++;
+                } else if (dataFill == 60 & !hasCalibrated) {
+                    Statistics stats = new Statistics(sleepData);
+                    mean = stats.getMean();
+                    stdDev = stats.getStdDev();
+                    Log.d("data", "calibrated!");
+                    hasCalibrated = true;
+
+                    // use running averages from now on with 5 inputs
+                    for (int i = 0; i < 5; i++) {
+                        sleepData[i] = mean;
                     }
-                });
+
+                    dataFill = 0;
+                }
+
+                if (hasCalibrated) {
+                    dataFill = (dataFill + 1) % 5;
+                    sleepData[dataFill] = alphaBetaRatio;
+
+                    Statistics stats = new Statistics(Arrays.copyOfRange(sleepData, 0, 5));
+
+                    if (stats.getMean() > (mean + 2.5 * stdDev)) {
+                        Log.d("SLEEP", "YOU SLEEPING BRO");
+                    }
+                }
+
+                bufferFill = 0;
             }
         }
 
@@ -405,18 +248,6 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        Button pauseButton = (Button) findViewById(R.id.pause);
-//        pauseButton.setOnClickListener(this);
-        // // Uncommet to test Muse File Reader
-        //
-        // // file can be big, read it in a separate thread
-        // Thread thread = new Thread(new Runnable() {
-        //     public void run() {
-        //         playMuseFile("testfile.muse");
-        //     }
-        // });
-        // thread.start();
 
         leftEarEeg = new Complex[512];
         leftForeheadEeg = new Complex[512];
