@@ -338,56 +338,7 @@ public class MainActivity extends ActionBarActivity {
                 fileWriter.close();
             }
         }
-//        else if (v.getId() == R.id.pause) {
-//            dataTransmission = !dataTransmission;
-//            if (muse != null) {
-//                muse.enableDataTransmission(dataTransmission);
-//            }
-//        }
     }
-
-    /*
-     * Simple example of getting data from the "*.muse" file
-     */
-    private void playMuseFile(String name) {
-        File dir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        File file = new File(dir, name);
-        final String tag = "Muse File Reader";
-        if (!file.exists()) {
-            Log.w(tag, "file doesn't exist");
-            return;
-        }
-        MuseFileReader fileReader = MuseFileFactory.getMuseFileReader(file);
-        while (fileReader.gotoNextMessage()) {
-            MessageType type = fileReader.getMessageType();
-            int id = fileReader.getMessageId();
-            long timestamp = fileReader.getMessageTimestamp();
-            Log.i(tag, "type: " + type.toString() +
-                    " id: " + Integer.toString(id) +
-                    " timestamp: " + String.valueOf(timestamp));
-            switch(type) {
-                case EEG: case BATTERY: case ACCELEROMETER: case QUANTIZATION:
-                    MuseDataPacket packet = fileReader.getDataPacket();
-                    Log.i(tag, "data packet: " + packet.getPacketType().toString());
-                    break;
-                case VERSION:
-                    MuseVersion version = fileReader.getVersion();
-                    Log.i(tag, "version" + version.getFirmwareType());
-                    break;
-                case CONFIGURATION:
-                    MuseConfiguration config = fileReader.getConfiguration();
-                    Log.i(tag, "config" + config.getBluetoothMac());
-                    break;
-                case ANNOTATION:
-                    AnnotationData annotation = fileReader.getAnnotation();
-                    Log.i(tag, "annotation" + annotation.getData());
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
 
     private void configureLibrary() {
         muse.registerConnectionListener(connectionListener);
