@@ -44,6 +44,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -56,15 +61,9 @@ public class MainActivity extends ActionBarActivity {
 
     boolean hasCalibrated = false;
 
-    public void logToFile(String string) {
-        try {
-            outputStream.write((string + "\n").getBytes());
-        } catch (IOException e) {
-            // pass
-        }
-    }
-
     boolean headbandOn = false;
+
+    Timer connectTimer;
 
     class ConnectionListener extends MuseConnectionListener {
 
@@ -273,72 +272,112 @@ public class MainActivity extends ActionBarActivity {
         } catch (FileNotFoundException e) {
             // shit
         }
+
+        TimerTask connectTask = new TimerTask() {
+            @Override
+            public void run() {
+                MuseManager.refreshPairedMuses();
+                List<Muse> pairedMuses = MuseManager.getPairedMuses();
+                if (pairedMuses.size() < 1) {
+                    Log.w("Muse Headband", "There is nothing to connect to");
+                }
+                else {
+                    muse = pairedMuses.get(0);
+                    ConnectionState state = muse.getConnectionState();
+                    if (state == ConnectionState.CONNECTED || state == ConnectionState.CONNECTING) {
+                        this.cancel();  // stop running
+
+                        return;
+                    }
+
+                    configureLibrary();
+                    fileWriter.open();
+                    fileWriter.addAnnotationString(1, "Connect clicked");
+                    /**
+                     * In most cases libmuse native library takes care about
+                     * exceptions and recovery mechanism, but native code still
+                     * may throw in some unexpected situations (like bad bluetooth
+                     * connection). Print all exceptions here.
+                     */
+
+                    try {
+                        muse.runAsynchronously();
+                    } catch (Exception e) {
+                        Log.e("Muse Headband", e.toString());
+                    }
+                }
+            }
+        };
+
+        connectTimer = new Timer();
+
+        connectTimer.schedule(connectTask, 500, 500);
     }
 
-    public void onClick(View v) {
-        Spinner musesSpinner = (Spinner) findViewById(R.id.muses_spinner);
-        if (v.getId() == R.id.refresh) {
-            MuseManager.refreshPairedMuses();
-            List<Muse> pairedMuses = MuseManager.getPairedMuses();
-            List<String> spinnerItems = new ArrayList<String>();
-            for (Muse m: pairedMuses) {
-                String dev_id = m.getName() + "-" + m.getMacAddress();
-                Log.i("Muse Headband", dev_id);
-                spinnerItems.add(dev_id);
-            }
-            ArrayAdapter<String> adapterArray = new ArrayAdapter<String> (
-                    this, android.R.layout.simple_spinner_item, spinnerItems);
-            musesSpinner.setAdapter(adapterArray);
-        }
-        else if (v.getId() == R.id.connect) {
-            List<Muse> pairedMuses = MuseManager.getPairedMuses();
-            if (pairedMuses.size() < 1 ||
-                    musesSpinner.getAdapter().getCount() < 1) {
-                Log.w("Muse Headband", "There is nothing to connect to");
-            }
-            else {
-                muse = pairedMuses.get(musesSpinner.getSelectedItemPosition());
-                ConnectionState state = muse.getConnectionState();
-                if (state == ConnectionState.CONNECTED ||
-                        state == ConnectionState.CONNECTING) {
-                    Log.w("Muse Headband",
-                            "doesn't make sense to connect second time to the same muse");
-                    return;
-                }
-                configureLibrary();
-                fileWriter.open();
-                fileWriter.addAnnotationString(1, "Connect clicked");
-                /**
-                 * In most cases libmuse native library takes care about
-                 * exceptions and recovery mechanism, but native code still
-                 * may throw in some unexpected situations (like bad bluetooth
-                 * connection). Print all exceptions here.
-                 */
-                try {
-                    muse.runAsynchronously();
-                } catch (Exception e) {
-                    Log.e("Muse Headband", e.toString());
-                }
-            }
-        }
-        else if (v.getId() == R.id.disconnect) {
-            if (muse != null) {
-                /**
-                 * true flag will force libmuse to unregister all listeners,
-                 * BUT AFTER disconnecting and sending disconnection event.
-                 * If you don't want to receive disconnection event (for ex.
-                 * you call disconnect when application is closed), then
-                 * unregister listeners first and then call disconnect:
-                 * muse.unregisterAllListeners();
-                 * muse.disconnect(false);
-                 */
-                muse.disconnect(true);
-                fileWriter.addAnnotationString(1, "Disconnect clicked");
-                fileWriter.flush();
-                fileWriter.close();
-            }
-        }
-    }
+//    public void onClick(View v) {
+//        Spinner musesSpinner = (Spinner) findViewById(R.id.muses_spinner);
+//        if (v.getId() == R.id.refresh) {
+//            MuseManager.refreshPairedMuses();
+//            List<Muse> pairedMuses = MuseManager.getPairedMuses();
+//            List<String> spinnerItems = new ArrayList<String>();
+//            for (Muse m: pairedMuses) {
+//                String dev_id = m.getName() + "-" + m.getMacAddress();
+//                Log.i("Muse Headband", dev_id);
+//                spinnerItems.add(dev_id);
+//            }
+//            ArrayAdapter<String> adapterArray = new ArrayAdapter<String> (
+//                    this, android.R.layout.simple_spinner_item, spinnerItems);
+//            musesSpinner.setAdapter(adapterArray);
+//        }
+//        else if (v.getId() == R.id.connect) {
+//            List<Muse> pairedMuses = MuseManager.getPairedMuses();
+//            if (pairedMuses.size() < 1 ||
+//                    musesSpinner.getAdapter().getCount() < 1) {
+//                Log.w("Muse Headband", "There is nothing to connect to");
+//            }
+//            else {
+//                muse = pairedMuses.get(musesSpinner.getSelectedItemPosition());
+//                ConnectionState state = muse.getConnectionState();
+//                if (state == ConnectionState.CONNECTED ||
+//                        state == ConnectionState.CONNECTING) {
+//                    Log.w("Muse Headband",
+//                            "doesn't make sense to connect second time to the same muse");
+//                    return;
+//                }
+//                configureLibrary();
+//                fileWriter.open();
+//                fileWriter.addAnnotationString(1, "Connect clicked");
+//                /**
+//                 * In most cases libmuse native library takes care about
+//                 * exceptions and recovery mechanism, but native code still
+//                 * may throw in some unexpected situations (like bad bluetooth
+//                 * connection). Print all exceptions here.
+//                 */
+//                try {
+//                    muse.runAsynchronously();
+//                } catch (Exception e) {
+//                    Log.e("Muse Headband", e.toString());
+//                }
+//            }
+//        }
+//        else if (v.getId() == R.id.disconnect) {
+//            if (muse != null) {
+//                /**
+//                 * true flag will force libmuse to unregister all listeners,
+//                 * BUT AFTER disconnecting and sending disconnection event.
+//                 * If you don't want to receive disconnection event (for ex.
+//                 * you call disconnect when application is closed), then
+//                 * unregister listeners first and then call disconnect:
+//                 * muse.unregisterAllListeners();
+//                 * muse.disconnect(false);
+//                 */
+//                muse.disconnect(true);
+//                fileWriter.addAnnotationString(1, "Disconnect clicked");
+//                fileWriter.flush();
+//                fileWriter.close();
+//            }
+//        }
+//    }
 
     private void configureLibrary() {
         muse.registerConnectionListener(connectionListener);
