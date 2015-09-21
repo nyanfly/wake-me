@@ -4,9 +4,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="connect">Connect</string>
-    <string name="status">Connection Status:</string>
-    <string name="disconnect">Disconnect</string>
-    <string name="refresh">Refresh</string>
-
+    <string name="connecting">Connecting to\nMuse...</string>
+    <string name="put_on_muse">Please put\non Muse.</string>
+    <string name="calibrating">Calibrating\nplease wait...</string>
+    <string name="learning">Stay awake!</string>
+    <string name="falling_asleep">WAKE UP</string>
 </resources>

@@ -3,100 +3,37 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
-
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:id="@+id/relative_layout" >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-        <Spinner
-            android:id="@+id/muses_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="60dp" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:orientation="horizontal" >
-            <!--<Button-->
-                <!--android:id="@+id/refresh"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:text="@string/refresh"-->
-                <!--android:onClick="onClick" />-->
-            <!--<Button-->
-                <!--android:id="@+id/connect"-->
-                <!--android:layout_width="100dp"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:text="@string/connect"-->
-                <!--android:onClick="onClick" />-->
-            <!--<Button-->
-                <!--android:id="@+id/disconnect"-->
-                <!--android:layout_width="120dp"-->
-                <!--android:layout_height="40dp"-->
-                <!--android:text="@string/disconnect"-->
-                <!--android:onClick="onClick" />-->
-        </LinearLayout>
-        <TextView
-            android:id="@+id/con_status"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:textSize="16sp" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_weight="1" >
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_weight="1"-->
-                <!--android:id="@+id/eeg_left_ear"/>-->
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_weight="1"-->
-                <!--android:id="@+id/eeg_left_forehead"/>-->
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_weight="1"-->
-                <!--android:id="@+id/eeg_right_forehead"/>-->
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_weight="1"-->
-                <!--android:id="@+id/eeg_right_ear"/>-->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/josh"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/two"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/three"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/four"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/five"/>
-        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/text_view"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:textColor="@color/accent1"
+            android:textSize="60sp"
+            android:text=""
+            android:layout_gravity="center_horizontal|top"
+            android:textStyle="bold"
+            android:layout_weight="1.5" />
+
+        <NumberPicker
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:id="@+id/button"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:id="@+id/battery"/>
+            android:onClick="onClick" />
     </LinearLayout>
 </RelativeLayout>

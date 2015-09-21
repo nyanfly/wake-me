@@ -4,14 +4,28 @@
 package com.williezhu.musetest;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,6 +49,8 @@ import com.interaxon.libmuse.MuseFileWriter;
 import com.interaxon.libmuse.MuseManager;
 import com.interaxon.libmuse.MusePreset;
 import com.interaxon.libmuse.MuseVersion;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,6 +79,9 @@ public class MainActivity extends ActionBarActivity {
 
     boolean headbandOn = false;
 
+    int state = 0;  // is staying awake
+    int violations = 0;
+
     Timer connectTimer;
 
     class ConnectionListener extends MuseConnectionListener {
@@ -81,21 +100,6 @@ public class MainActivity extends ActionBarActivity {
             final String full = "Muse " + p.getSource().getMacAddress() +
                     " " + status;
             Log.i("Muse Headband", full);
-            Activity activity = activityRef.get();
-            // UI thread is used here only because we need to update
-            // TextView values. You don't have to use another thread, unless
-            // you want to run disconnect() or connect() from connection packet
-            // handler. In this case creating another thread is required.
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView statusText =
-                                (TextView) findViewById(R.id.con_status);
-                        statusText.setText(status);
-                    }
-                });
-            }
         }
     }
 
@@ -119,8 +123,6 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public void receiveMuseDataPacket(MuseDataPacket p) {
-            final ArrayList<Double> data = p.getValues();
-
             switch (p.getPacketType()) {
                 case BATTERY:
                     updateBattery(p.getValues());
@@ -145,17 +147,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         private void updateBattery(final ArrayList<Double> data) {
-            Activity activity = activityRef.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView battery = (TextView) findViewById(R.id.battery);
-                        battery.setText(String.format("%2.1f",
-                                data.get(Battery.CHARGE_PERCENTAGE_REMAINING.ordinal())));
-                    }
-                });
-            }
+            Log.d("Battery", String.format("%6.2f", data.get(Battery.CHARGE_PERCENTAGE_REMAINING.ordinal())));
         }
 
         private void updateEeg(final ArrayList<Double> data) {
@@ -189,11 +181,21 @@ public class MainActivity extends ActionBarActivity {
 
                 double alphaBetaRatio = frequencyStrengths[2] / frequencyStrengths[3];
 
-                if (dataFill < 60 && headbandOn && !hasCalibrated) {
+                if (dataFill < 10 && headbandOn && !hasCalibrated) {
+                    if (dataFill == 0) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView textView = (TextView) findViewById(R.id.text_view);
+                                textView.setText(getResources().getString(R.string.calibrating));
+                            }
+                        });
+                    }
+
                     sleepData[dataFill] = alphaBetaRatio;
                     Log.d("data", "collecting: " + alphaBetaRatio);
                     dataFill++;
-                } else if (dataFill == 60 & !hasCalibrated) {
+                } else if (dataFill == 10 & !hasCalibrated) {
                     Statistics stats = new Statistics(sleepData);
                     mean = stats.getMean();
                     stdDev = stats.getStdDev();
@@ -205,17 +207,57 @@ public class MainActivity extends ActionBarActivity {
                         sleepData[i] = mean;
                     }
 
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ImageButton imageButton = (ImageButton) findViewById(R.id.button);
+                            imageButton.setBackgroundResource(R.drawable.teacher44);
+                            TextView textView = (TextView) findViewById(R.id.text_view);
+                            textView.setText(getResources().getString(R.string.learning));
+                        }
+                    });
+
                     dataFill = 0;
                 }
 
-                if (hasCalibrated) {
+                if (hasCalibrated && headbandOn) {
                     dataFill = (dataFill + 1) % 5;
                     sleepData[dataFill] = alphaBetaRatio;
 
                     Statistics stats = new Statistics(Arrays.copyOfRange(sleepData, 0, 5));
 
+                    Log.d("data", "Got: " + stats.getMean() + " Threshold: " + (mean + 2.5 * stdDev));
                     if (stats.getMean() > (mean + 2.5 * stdDev)) {
-                        Log.d("SLEEP", "YOU SLEEPING BRO");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageButton imageButton = (ImageButton) findViewById(R.id.button);    // and change background
+                                imageButton.setBackgroundResource(R.drawable.exclamation2);
+                                TextView textView = (TextView) findViewById(R.id.text_view);
+                                textView.setText(getResources().getString(R.string.falling_asleep));
+                                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
+                                relativeLayout.setBackgroundColor(getResources().getColor(R.color.accent2));
+                            }
+                        });
+
+                        Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                        v.vibrate(2000);
+
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                goBackToClass();
+                            }
+                        }, 2500);
+
+                        violations++;
+
+                        if (violations > 3) {
+                            AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, 0);
+                        }
+
                     }
                 }
 
@@ -246,6 +288,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         leftEarEeg = new Complex[512];
@@ -253,7 +296,7 @@ public class MainActivity extends ActionBarActivity {
         rightForeheadEeg = new Complex[512];
         rightEarEeg = new Complex[512];
 
-        sleepData = new double[60];
+        sleepData = new double[10];
 
         bufferFill = 0;
         dataFill = 0;
@@ -284,8 +327,43 @@ public class MainActivity extends ActionBarActivity {
                 else {
                     muse = pairedMuses.get(0);
                     ConnectionState state = muse.getConnectionState();
-                    if (state == ConnectionState.CONNECTED || state == ConnectionState.CONNECTING) {
+//                    if (state == ConnectionState.CONNECTED || state == ConnectionState.CONNECTING) {
+                    if (state == ConnectionState.CONNECTED) {
                         this.cancel();  // stop running
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageButton imageButton = (ImageButton) findViewById(R.id.button);    // and change background
+                                imageButton.setBackgroundResource(R.drawable.boy50);
+                                TextView textView = (TextView) findViewById(R.id.text_view);
+                                textView.setText(getResources().getString(R.string.put_on_muse));
+
+                                final Dialog d = new Dialog(MainActivity.this);
+                                d.setTitle("Length of class:");
+                                d.setContentView(R.layout.dialog);
+                                Button b1 = (Button) d.findViewById(R.id.button1);
+                                final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+                                np.setMaxValue(100); // max value 100
+                                np.setMinValue(0);   // min value 0
+                                np.setWrapSelectorWheel(false);
+                                b1.setOnClickListener(new View.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Uri gmmIntentUri = Uri.parse("geo:0,0?q=coffee");
+                                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                                        mapIntent.setPackage("com.google.android.apps.maps");
+                                        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                                            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                                            alarmManager.set(AlarmManager.ELAPSED_REALTIME, 1000 * 60 * np.getValue(), PendingIntent.getBroadcast(getBaseContext(), 1, mapIntent, PendingIntent.FLAG_ONE_SHOT));
+                                        }
+                                        d.dismiss();
+                                    }
+                                });
+                                d.show();
+                            }
+                        });
 
                         return;
                     }
@@ -312,6 +390,32 @@ public class MainActivity extends ActionBarActivity {
         connectTimer = new Timer();
 
         connectTimer.schedule(connectTask, 500, 500);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageButton imageButton = (ImageButton) findViewById(R.id.button);
+                imageButton.setBackgroundResource(R.drawable.blueetooth);
+                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
+                relativeLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                TextView textView = (TextView) findViewById(R.id.text_view);
+                textView.setText(getResources().getString(R.string.connecting));
+            }
+        });
+    }
+
+    private void goBackToClass() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageButton imageButton = (ImageButton) findViewById(R.id.button);
+                imageButton.setBackgroundResource(R.drawable.teacher44);
+                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
+                relativeLayout.setBackgroundColor(getResources().getColor(R.color.primary));
+                TextView textView = (TextView) findViewById(R.id.text_view);
+                textView.setText(getResources().getString(R.string.learning));
+            }
+        });
     }
 
     private void configureLibrary() {
@@ -330,26 +434,29 @@ public class MainActivity extends ActionBarActivity {
         muse.enableDataTransmission(dataTransmission);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    public void onClick(View v) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageButton imageButton = (ImageButton) findViewById(R.id.button);    // and change background
+                imageButton.setBackgroundResource(R.drawable.exclamation2);
+                TextView textView = (TextView) findViewById(R.id.text_view);
+                textView.setText(getResources().getString(R.string.falling_asleep));
+                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.relative_layout);
+                relativeLayout.setBackgroundColor(getResources().getColor(R.color.accent2));
+            }
+        });
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        Vibrator vi = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vi.vibrate(2000);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                goBackToClass();
+            }
+        }, 2500);
     }
 
     @Override
